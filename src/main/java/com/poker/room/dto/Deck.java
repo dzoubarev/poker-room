@@ -1,9 +1,12 @@
-package com.poker.room;
+package com.poker.room.dto;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import jakarta.persistence.Embeddable;
+
+@Embeddable
 public class Deck {
     private List<Card> deck;
     
@@ -19,10 +22,6 @@ public class Deck {
 
     public String toString(){
         return deck.toString();
-    }
-
-    public void deal(List<Player> players){
-
     }
 
     public Card get( int index ){

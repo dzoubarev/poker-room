@@ -1,20 +1,29 @@
-package com.poker.room;
+package com.poker.room.entity;
 
 import java.util.List;
 import java.util.UUID;
 
+import com.poker.room.dto.Card;
+
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
 
 
+@Entity
 public class Player {
+    @Id
+    @GeneratedValue
     private UUID id;
 
     private Card[] hand;
-    private int chips;
+    private double chips;
     private boolean isFolded;
     private boolean isAllIn;
     private boolean isBigBlind;
     private boolean isSmallBlind;
-    private int currBet;
+    private boolean tookAction;
+    private double currBet;
     private Table table;
     
     public Player(Table table){
@@ -22,6 +31,7 @@ public class Player {
         isFolded = true;
         this.table = table;
         id = UUID.randomUUID();
+        tookAction = false;
     }
 
     public void addToHand(Card card){
@@ -32,30 +42,40 @@ public class Player {
 
     public void fold(){
         this.isFolded  = true;
+        this.tookAction = true;
     }
 
-    public void raise ( int amount ) throws IllegalArgumentException{
+    public double raise ( double amount ) throws IllegalArgumentException{
         if(amount > chips){throw new IllegalArgumentException("Not enough chips."); }
+
         currBet += amount;
         chips -= amount;
         table.addToPot(amount);
+        this.tookAction = true;
+        return amount;
     }
 
-    public void call (int amount) throws IllegalArgumentException{
+    public double call (double amount) throws IllegalArgumentException{
         if(amount > chips){throw new IllegalArgumentException("Not enough chips."); }
+
         currBet += amount;
         chips -= amount;
         table.addToPot(amount);
+        this.tookAction = true;
+        return amount;
     }
 
-    public void allIn() {
+    public double allIn() {
         table.addToPot(chips);
+        double amtIn = chips;
         chips = 0;
-        allIn();
+        this.tookAction = true;
+        return amtIn;
+        
     }
 
     public void check(){
-        
+        this.tookAction = true;
     }
 
     public void setBigBlind(boolean isBigBlind){
@@ -74,7 +94,7 @@ public class Player {
 
     public Table getTable(){ return table; }
 
-    public int getCurrBet(){ return currBet;}
+    public double getCurrBet(){ return currBet;}
 
     public void win(int amount){
         this.chips += amount;
@@ -86,4 +106,15 @@ public class Player {
         currBet = 0;
     }
 
+    public boolean hasTakenAction(){
+        return this.tookAction;
+    }
+
+    public void setCurrBet(double amount){
+        this.currBet = amount;
+    }
+
+    public void setFolded(boolean folded){
+        this.isFolded = folded;
+    }
 }

@@ -1,5 +1,8 @@
-package com.poker.room;
+package com.poker.room.dto;
 
+import jakarta.persistence.Embeddable;
+
+@Embeddable
 public class Card {
     private int rank;
     private int suit; //0 is club, 1 is spade, 2 is diamond, 3 is heart
